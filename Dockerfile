@@ -8,7 +8,15 @@ RUN git clone https://github.com/rebeccapanel/Rebecca-node.git /temp && \
     cp -r /temp/. /app && \
     rm -rf /temp
 
-# آپدیت پیپ و نصب شرطی پکیج‌ها در صورت وجود فایل نیازمندی‌ها
+# پیدا کردن خودکار main.py و انتقال آن به ریشه /app اگر داخل زیرپوشه باشد
+RUN if [ ! -f /app/main.py ]; then \
+        MAIN_PATH=$(find /app -name main.py | head -n 1); \
+        if [ -n "$MAIN_PATH" ]; then \
+            cp "$MAIN_PATH" /app/; \
+        fi; \
+    fi
+
+# آپدیت پیپ و نصب شرطی پکیج‌ها
 RUN pip install --no-cache-dir --upgrade pip
 RUN if [ -f requirements.txt ]; then pip install --no-cache-dir -r requirements.txt; fi
 
