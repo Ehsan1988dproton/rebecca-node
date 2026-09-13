@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y git curl bash build-essential && rm -rf
 # کلون کردن مستقیم پروژه در پوشه /app
 RUN git clone https://github.com/rebeccapanel/Rebecca-node.git /app
 
-# نصب پکیج‌ها (پیدا کردن خودکار requirements.txt در صورت وجود)
+# نصب پکیج‌ها
 RUN pip install --no-cache-dir --upgrade pip
 RUN if [ -f requirements.txt ]; then \
         pip install --no-cache-dir -r requirements.txt; \
@@ -19,7 +19,7 @@ RUN mkdir -p /var/lib/rebecca-node
 COPY ssl_client_cert.pem /var/lib/rebecca-node/ssl_client_cert.pem
 ENV SSL_CLIENT_CERT_FILE="/var/lib/rebecca-node/ssl_client_cert.pem"
 
-EXPOSE 62050
+# اکسپوز کردن هر دو پورت ارتباطی نود
+EXPOSE 62050 62052
 
-# اجرای پویا فایل main صرف نظر از پوشه آن
 CMD ["sh", "-c", "python3 $(find . -name main.py | head -n 1)"]
