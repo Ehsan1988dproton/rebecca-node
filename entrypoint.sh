@@ -1,16 +1,15 @@
 #!/bin/bash
 set -e
 
-echo "[Info] Setting up Node Certificate..."
-mkdir -p /var/lib/rebecca-node
+echo "[Info] Setting up Node SSL Certificate..."
+mkdir -p /var/lib/marzban-node
 
-CERT_PATH="/var/lib/rebecca-node/ssl_client_cert.pem"
+CERT_PATH="/var/lib/marzban-node/ssl_client_cert.pem"
 
-# نوشتن گواهی و کلید در یک فایل
+# نوشتن کل محتوای متغیر NODE_CERT (که شامل گواهی و کلید است) در فایل نهایی
 echo "$NODE_CERT" > "$CERT_PATH"
-echo "$NODE_KEY" >> "$CERT_PATH"
 
-# صادر کردن متغیر محیطی برای پایتون
+# صادر کردن متغیر محیطی برای سرویس
 export SSL_CLIENT_CERT_FILE="$CERT_PATH"
 
 echo "[Info] Starting Node Daemon..."
