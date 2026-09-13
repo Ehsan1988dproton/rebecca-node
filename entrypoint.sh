@@ -1,19 +1,17 @@
 #!/bin/bash
+set -e
 
-echo "[Info] Setting up Rebecca Node Certificate..."
+echo "[Info] Setting up Node Certificate..."
 mkdir -p /var/lib/rebecca-node
 
-# قرار دادن گواهی و کلید در مسیر مورد نیاز ربکا نود
-if [ -n "$NODE_CERT" ]; then
-    echo "$NODE_CERT" > /var/lib/rebecca-node/ssl_client_cert.pem
-fi
+CERT_PATH="/var/lib/rebecca-node/ssl_client_cert.pem"
 
-if [ -n "$NODE_KEY" ]; then
-    echo "$NODE_KEY" >> /var/lib/rebecca-node/ssl_client_cert.pem
-fi
+# نوشتن گواهی و کلید در یک فایل
+echo "$NODE_CERT" > "$CERT_PATH"
+echo "$NODE_KEY" >> "$CERT_PATH"
 
-# معرفی مسیر گواهی به دیمون ربکا نود
-export SSL_CLIENT_CERT_FILE="/var/lib/rebecca-node/ssl_client_cert.pem"
+# صادر کردن متغیر محیطی برای پایتون
+export SSL_CLIENT_CERT_FILE="$CERT_PATH"
 
-echo "[Info] Starting Rebecca Node Daemon..."
-exec /usr/local/bin/rebecca-node
+echo "[Info] Starting Node Daemon..."
+exec python3 main.py
