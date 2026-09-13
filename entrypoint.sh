@@ -1,16 +1,19 @@
 #!/bin/bash
 
-echo "[Info] Setting up Node Certificate..."
-mkdir -p /var/lib/marzban-node
+echo "[Info] Setting up Rebecca Node Certificate..."
+mkdir -p /var/lib/rebecca-node
 
-# قرار دادن گواهی و کلید در مسیر استاندارد نود
+# قرار دادن گواهی و کلید در مسیر مورد نیاز ربکا نود
 if [ -n "$NODE_CERT" ]; then
-    echo "$NODE_CERT" > /var/lib/marzban-node/ssl_client_cert.pem
+    echo "$NODE_CERT" > /var/lib/rebecca-node/ssl_client_cert.pem
 fi
 
 if [ -n "$NODE_KEY" ]; then
-    echo "$NODE_KEY" >> /var/lib/marzban-node/ssl_client_cert.pem
+    echo "$NODE_KEY" >> /var/lib/rebecca-node/ssl_client_cert.pem
 fi
 
-echo "[Info] Starting Node Daemon..."
-exec python3 main.py
+# معرفی مسیر گواهی به دیمون ربکا نود
+export SSL_CLIENT_CERT_FILE="/var/lib/rebecca-node/ssl_client_cert.pem"
+
+echo "[Info] Starting Rebecca Node Daemon..."
+exec /usr/local/bin/rebecca-node
