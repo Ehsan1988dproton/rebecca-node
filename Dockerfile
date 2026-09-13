@@ -3,15 +3,17 @@ FROM python:3.10-slim
 WORKDIR /app
 RUN apt-get update && apt-get install -y git curl bash && rm -rf /var/lib/apt/lists/*
 
-# دانلود سورس نود ربکا
-RUN git clone https://github.com/rebeccapanel/Rebecca-node.git .
+# کلون کردن پروژه در پوشه موقت برای جلوگیری از خطای پوشه غیرخالی
+RUN git clone https://github.com/rebeccapanel/Rebecca-node.git /temp && \
+    cp -r /temp/. /app && \
+    rm -rf /temp
+
 RUN pip install --no-cache-dir -r requirements.txt
 
-# ساخت پوشه و کپی مستقیم فایل گواهی
+# انتقال و تنظیم فایل گواهی
 RUN mkdir -p /var/lib/rebecca-node
 COPY ssl_client_cert.pem /var/lib/rebecca-node/ssl_client_cert.pem
 
-# معرفی صریح مسیر گواهی به برنامه
 ENV SSL_CLIENT_CERT_FILE="/var/lib/rebecca-node/ssl_client_cert.pem"
 
 EXPOSE 62050
