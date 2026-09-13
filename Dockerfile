@@ -1,22 +1,18 @@
-# مرحله اول: کامپایل ربکا نود با زبان Go
-FROM golang:alpine AS builder
-RUN apk add --no-cache git
-RUN git clone https://github.com/rebeccapanel/Rebecca-node.git /app
+FROM python:3.10-slim
+
 WORKDIR /app
-RUN go build -o rebecca-node .
+RUN apt-get update && apt-get install -y git curl bash && rm -rf /var/lib/apt/lists/*
 
-# مرحله دوم: آماده‌سازی محیط نهایی
-FROM debian:stable-slim
-RUN apt-get update && apt-get install -y curl bash ca-certificates && rm -rf /var/lib/apt/lists/*
+# دانلود سورس نود ربکا
+RUN git clone https://github.com/rebeccapanel/Rebecca-node.git .
+RUN pip install --no-cache-dir -r requirements.txt
 
-# نصب هسته Xray
-RUN bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ install
+# ساخت پوشه و کپی مستقیم فایل گواهی از گیت‌هاب به مسیر اصلی نود
+RUN mkdir -p /var/lib/rebecca-node
+COPY ssl_client_cert.pem /var/lib/rebecca-node/ssl_client_cert.pem
 
-# کپی کردن باینری اصلی ربکا نود از مرحله قبل
-COPY --from=builder /app/rebecca-node /usr/local/bin/rebecca-node
-
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+# معرفی مسیر صریح گواهی به برنامه
+ENV SSL_CLIENT_CERT_FILE="/var/lib/rebecca-node/ssl_client_cert.pem"
 
 EXPOSE 62050
-ENTRYPOINT ["/entrypoint.sh"]
+CMD ["python3", "main.py"]
