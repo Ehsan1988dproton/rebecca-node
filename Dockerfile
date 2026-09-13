@@ -1,14 +1,16 @@
 FROM python:3.10-slim
 
 WORKDIR /app
-RUN apt-get update && apt-get install -y git curl bash && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y git curl bash build-essential && rm -rf /var/lib/apt/lists/*
 
-# کلون کردن پروژه در پوشه موقت برای جلوگیری از خطای پوشه غیرخالی
+# کلون کردن پروژه در پوشه موقت
 RUN git clone https://github.com/rebeccapanel/Rebecca-node.git /temp && \
     cp -r /temp/. /app && \
     rm -rf /temp
 
-RUN pip install --no-cache-dir -r requirements.txt
+# آپدیت پیپ و نصب پکیج‌ها
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
 
 # انتقال و تنظیم فایل گواهی
 RUN mkdir -p /var/lib/rebecca-node
